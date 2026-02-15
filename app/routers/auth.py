@@ -12,9 +12,9 @@ auth_router = APIRouter(
     tags=["Auth"],
 )
 
-@auth_router.post("/auth/register", response_model=UserResponse)
+@auth_router.post("/register", response_model=UserResponse)
 def register_user(user_create: UserCreate, db: Session = Depends(get_db)) -> UserResponse:
-    existing_user = User.query.filter_by(email=user_create.email).first()
+    existing_user = db.query(User).filter(User.email == user_create.email).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
 
@@ -25,7 +25,7 @@ def register_user(user_create: UserCreate, db: Session = Depends(get_db)) -> Use
     db.refresh(new_user)
     return UserResponse(id=new_user.id, email=new_user.email, created_at=new_user.created_at)
 
-@auth_router.post("/auth/login")
+@auth_router.post("/login")
 def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)) -> Token:
     user = db.query(User).filter(User.email == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
