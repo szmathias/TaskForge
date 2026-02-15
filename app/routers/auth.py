@@ -1,3 +1,9 @@
+"""
+Authentication router for user registration and login.
+
+This module handles user authentication endpoints including
+user registration and login with JWT token generation.
+"""
 from fastapi import Depends, HTTPException, APIRouter
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -15,6 +21,19 @@ auth_router = APIRouter(
 
 @auth_router.post("/register", response_model=UserResponse)
 def register_user(user_create: UserCreate, db: Session = Depends(get_db)) -> UserResponse:
+    """
+    Register a new user with email and password.
+
+    Args:
+        user_create: User registration data containing email and password
+        db: Database session dependency
+
+    Returns:
+        UserResponse: The created user information
+
+    Raises:
+        HTTPException: If email is already registered
+    """
     existing_user = db.query(User).filter(User.email == user_create.email).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -29,6 +48,19 @@ def register_user(user_create: UserCreate, db: Session = Depends(get_db)) -> Use
 
 @auth_router.post("/login")
 def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)) -> Token:
+    """
+    Authenticate a user and generate a JWT access token.
+
+    Args:
+        form_data: OAuth2 form containing username (email) and password
+        db: Database session dependency
+
+    Returns:
+        Token: JWT access token and token type
+
+    Raises:
+        HTTPException: If credentials are invalid
+    """
     user = db.query(User).filter(User.email == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid email or password")

@@ -1,3 +1,9 @@
+"""
+Project database model.
+
+This module defines the Project SQLAlchemy model representing
+projects that contain tasks and are owned by users.
+"""
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -6,6 +12,18 @@ from app.database import Base
 
 
 class Project(Base):
+    """
+    Project model representing a collection of tasks.
+
+    Attributes:
+        id: Unique identifier for the project
+        title: Project title
+        description: Project description
+        owner_id: Foreign key to the user who owns this project
+        created_at: Timestamp of project creation
+        owner: Relationship to the owning user
+        tasks: Relationship to project's tasks (cascade delete)
+    """
     __tablename__ = "projects"
 
     id = Column(Integer, primary_key=True, index=True)

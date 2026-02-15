@@ -1,3 +1,9 @@
+"""
+TaskForge - A FastAPI-based task and project management application.
+
+This module initializes the FastAPI application, registers all routers,
+and creates the database tables.
+"""
 from fastapi import FastAPI
 
 import app.database as db
@@ -17,9 +23,21 @@ db.Base.metadata.create_all(bind=db.engine)
 
 @TaskForge.get("/")
 async def root():
+    """
+    Root endpoint that returns a welcome message.
+
+    Returns:
+        dict: A simple greeting message
+    """
     return {"message": "Hello, test!"}
 
 
 @TaskForge.get("/health")
 async def health():
+    """
+    Health check endpoint to verify the API is running.
+
+    Returns:
+        dict: Status indicator showing the service is operational
+    """
     return {"status": "ok"}

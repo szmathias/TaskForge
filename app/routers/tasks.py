@@ -1,3 +1,10 @@
+"""
+Task management router for CRUD operations.
+
+This module provides endpoints for creating, reading, updating, and deleting tasks
+within projects. Tasks can be filtered by status and priority. All operations
+verify that the user owns the associated project.
+"""
 from typing import Optional
 
 from fastapi import Depends, APIRouter, HTTPException
@@ -21,10 +28,24 @@ task_detail_router = APIRouter(
 )
 
 
-# create a task, ensuring the project belongs to the current user
 @task_router.post("/", response_model=TaskResponse)
 def create_task(project_id: int, task_create: TaskCreate, db: Session = Depends(get_db),
                 current_user: User = Depends(get_current_user)) -> TaskResponse:
+    """
+    Create a new task within a project.
+
+    Args:
+        project_id: The ID of the project to add the task to
+        task_create: Task creation data
+        db: Database session dependency
+        current_user: Authenticated user dependency
+
+    Returns:
+        TaskResponse: The created task information
+
+    Raises:
+        HTTPException: If project not found or user doesn't have access
+    """
     project = db.query(Project).filter(Project.id == project_id, Project.owner_id == current_user.id).first()
     if project is None:
         raise HTTPException(status_code=403, detail="Project not found or access denied")
@@ -40,10 +61,25 @@ def create_task(project_id: int, task_create: TaskCreate, db: Session = Depends(
                         updated_at=new_task.updated_at)
 
 
-# list tasks for a project, ensuring the project belongs to the current user
 @task_router.get("/", response_model=list[TaskResponse])
 def list_tasks(project_id: int, status: Optional[str] = None, priority: Optional[str] = None,
                db: Session = Depends(get_db), current_user: User = Depends(get_current_user)) -> list[TaskResponse]:
+    """
+    List all tasks for a project with optional filtering.
+
+    Args:
+        project_id: The ID of the project to list tasks from
+        status: Optional filter for task status
+        priority: Optional filter for task priority
+        db: Database session dependency
+        current_user: Authenticated user dependency
+
+    Returns:
+        list[TaskResponse]: List of tasks matching the filters
+
+    Raises:
+        HTTPException: If project not found or user doesn't have access
+    """
     project = db.query(Project).filter(Project.id == project_id, Project.owner_id == current_user.id).first()
     if project is None:
         raise HTTPException(status_code=403, detail="Project not found or access denied")
@@ -61,10 +97,23 @@ def list_tasks(project_id: int, status: Optional[str] = None, priority: Optional
             in tasks]
 
 
-# get a task by ID, ensuring the project belongs to the current user
 @task_detail_router.get("/{task_id}", response_model=TaskResponse)
 def get_task(task_id: int, db: Session = Depends(get_db),
              current_user: User = Depends(get_current_user)) -> TaskResponse:
+    """
+    Get a specific task by ID.
+
+    Args:
+        task_id: The ID of the task to retrieve
+        db: Database session dependency
+        current_user: Authenticated user dependency
+
+    Returns:
+        TaskResponse: The requested task information
+
+    Raises:
+        HTTPException: If task not found or user doesn't have access to the project
+    """
     task = db.query(Task).filter(Task.id == task_id).first()
     if task is None:
         raise HTTPException(status_code=404, detail="Task not found")
@@ -78,10 +127,24 @@ def get_task(task_id: int, db: Session = Depends(get_db),
                         assignee_id=task.assignee_id, created_at=task.created_at, updated_at=task.updated_at)
 
 
-# update a task, ensuring the project belongs to the current user
 @task_detail_router.put("/{task_id}", response_model=TaskResponse)
 def update_task(task_id: int, task_update: TaskUpdate, db: Session = Depends(get_db),
                 current_user: User = Depends(get_current_user)) -> TaskResponse:
+    """
+    Update a task's properties.
+
+    Args:
+        task_id: The ID of the task to update
+        task_update: Updated task data
+        db: Database session dependency
+        current_user: Authenticated user dependency
+
+    Returns:
+        TaskResponse: The updated task information
+
+    Raises:
+        HTTPException: If task not found or user doesn't have access to the project
+    """
     task = db.query(Task).filter(Task.id == task_id).first()
     if task is None:
         raise HTTPException(status_code=404, detail="Task not found")
@@ -110,9 +173,22 @@ def update_task(task_id: int, task_update: TaskUpdate, db: Session = Depends(get
                         assignee_id=task.assignee_id, created_at=task.created_at, updated_at=task.updated_at)
 
 
-# delete a task, ensuring the project belongs to the current user
 @task_detail_router.delete("/{task_id}")
 def delete_task(task_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)) -> dict:
+    """
+    Delete a task.
+
+    Args:
+        task_id: The ID of the task to delete
+        db: Database session dependency
+        current_user: Authenticated user dependency
+
+    Returns:
+        dict: Success message
+
+    Raises:
+        HTTPException: If task not found or user doesn't have access to the project
+    """
     task = db.query(Task).filter(Task.id == task_id).first()
     if task is None:
         raise HTTPException(status_code=404, detail="Task not found")
