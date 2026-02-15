@@ -11,7 +11,7 @@ class Task(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True, nullable=False)
     description = Column(String, nullable=True)
-    status = Column(String, default="todo",  nullable=False)
+    status = Column(String, default="todo", nullable=False)
     priority = Column(String, default="medium", nullable=False)
     due_date = Column(DateTime, nullable=True)
     project_id = Column(Integer, ForeignKey('projects.id'), nullable=False)

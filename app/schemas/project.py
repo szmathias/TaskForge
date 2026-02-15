@@ -3,9 +3,11 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+
 class ProjectCreate(BaseModel):
     title: str
     description: str
+
 
 class ProjectResponse(BaseModel):
     id: int
@@ -13,6 +15,7 @@ class ProjectResponse(BaseModel):
     description: str
     owner_id: int
     created_at: datetime
+
 
 class ProjectUpdate(BaseModel):
     title: Optional[str] = None

@@ -1,8 +1,8 @@
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel
-from enum import Enum
 
 
 class TaskStatus(str, Enum):
@@ -10,10 +10,12 @@ class TaskStatus(str, Enum):
     IN_PROGRESS = "in_progress"
     DONE = "done"
 
+
 class TaskPriority(str, Enum):
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
+
 
 class TaskCreate(BaseModel):
     name: str
@@ -21,6 +23,7 @@ class TaskCreate(BaseModel):
     priority: Optional[TaskPriority] = None
     due_date: Optional[datetime] = None
     assignee_id: Optional[int] = None
+
 
 class TaskResponse(BaseModel):
     id: int
@@ -33,6 +36,7 @@ class TaskResponse(BaseModel):
     project_id: int
     created_at: datetime
     updated_at: datetime
+
 
 class TaskUpdate(BaseModel):
     name: Optional[str] = None
