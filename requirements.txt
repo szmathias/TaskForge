@@ -5,8 +5,10 @@ alembic
 pydantic[email]
 pydantic-settings
 python-jose[cryptography]
-passlib[bcrypt]
+passlib
+bcrypt == 4.0.1
 python-dotenv
 pytest
 httpx
 sqlmodel
+python-multipart
