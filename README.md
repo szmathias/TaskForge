@@ -5,11 +5,12 @@ A RESTful project and task management API built with FastAPI. Supports user auth
 ## Tech Stack
 
 - **Framework:** FastAPI
-- **Database:** SQLite with SQLAlchemy ORM
+- **Database:** SQLite (development) / PostgreSQL (Docker)
+- **ORM:** SQLAlchemy
 - **Authentication:** JWT tokens (python-jose) with bcrypt password hashing
 - **Validation:** Pydantic schemas for request/response models
-- **Testing:** pytest with FastAPI TestClient
-- **Containerization:** Docker with a multi-stage build
+- **Testing:** pytest with FastAPI TestClient (28 tests)
+- **Containerization:** Docker + Docker Compose
 
 ## Features
 
@@ -20,13 +21,13 @@ A RESTful project and task management API built with FastAPI. Supports user auth
 - **Query Parameter Filtering** — Filter tasks by status (`todo`, `in_progress`, `done`) and priority (`low`, `medium`, `high`)
 - **Cascading Deletes** — Deleting a project automatically removes all associated tasks
 - **Isolated Test Suite** — 28 tests running against an in-memory SQLite database with dependency injection overrides
-- **Dockerized** — Easy setup and deployment with Docker Compose
 
 ## Getting Started
 
 ### Prerequisites
 
 - Python 3.11+
+- Docker (optional)
 
 ### Installation
 
@@ -57,11 +58,12 @@ ACCESS_TOKEN_EXPIRATION_MINUTES=30
 ### Running the Server
 
 From the project root:
+
 ```bash
 uvicorn app.main:TaskForge --reload
 ```
 
-or with Docker:
+Or with Docker (uses PostgreSQL):
 
 ```bash
 docker compose up --build
@@ -131,10 +133,10 @@ TaskForge/
 │   ├── test_auth.py         # Auth flow and access control tests
 │   ├── test_projects.py     # Project CRUD and ownership isolation tests
 │   └── test_tasks.py        # Task CRUD, filtering, and cross-user access tests
+├── Dockerfile
+├── compose.yaml
 ├── .env.example
 ├── requirements.txt
-├── compose.yaml
-├── Dockerfile
 ├── .gitignore
 ├── LICENSE
 └── README.md
@@ -144,7 +146,7 @@ TaskForge/
 
 **FastAPI over Flask/Django** — FastAPI provides automatic request validation through Pydantic, built-in OpenAPI documentation, and native async support. For an API-only project without server-rendered templates, it's a better fit than Django's batteries-included approach or Flask's lack of built-in validation.
 
-**SQLite for development** — Keeps the project zero-dependency for anyone cloning the repo. No database server to install or configure. The SQLAlchemy abstraction means swapping to PostgreSQL for production is a one-line configuration change.
+**SQLite for development, PostgreSQL for Docker** — SQLite keeps the project zero-dependency for anyone cloning the repo. No database server to install or configure. The Docker Compose setup runs PostgreSQL for a production-realistic environment. The SQLAlchemy abstraction means swapping databases is a one-line configuration change.
 
 **403 instead of 404 for unauthorized access** — When a user requests a project or task they don't own (or that doesn't exist), the API returns 403 rather than 404. This prevents information leakage — an attacker can't probe for valid resource IDs by distinguishing "exists but not yours" from "doesn't exist."
 
