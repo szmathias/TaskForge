@@ -12,3 +12,4 @@ pytest
 httpx
 sqlmodel
 python-multipart
+psycopg2-binary

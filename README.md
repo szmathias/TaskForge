@@ -8,7 +8,8 @@ A RESTful project and task management API built with FastAPI. Supports user auth
 - **Database:** SQLite with SQLAlchemy ORM
 - **Authentication:** JWT tokens (python-jose) with bcrypt password hashing
 - **Validation:** Pydantic schemas for request/response models
-- **Testing:** pytest with FastAPI TestClient (28 tests)
+- **Testing:** pytest with FastAPI TestClient
+- **Containerization:** Docker with a multi-stage build
 
 ## Features
 
@@ -19,6 +20,7 @@ A RESTful project and task management API built with FastAPI. Supports user auth
 - **Query Parameter Filtering** — Filter tasks by status (`todo`, `in_progress`, `done`) and priority (`low`, `medium`, `high`)
 - **Cascading Deletes** — Deleting a project automatically removes all associated tasks
 - **Isolated Test Suite** — 28 tests running against an in-memory SQLite database with dependency injection overrides
+- **Dockerized** — Easy setup and deployment with Docker Compose
 
 ## Getting Started
 
@@ -54,8 +56,15 @@ ACCESS_TOKEN_EXPIRATION_MINUTES=30
 
 ### Running the Server
 
+From the project root:
 ```bash
 uvicorn app.main:TaskForge --reload
+```
+
+or with Docker:
+
+```bash
+docker compose up --build
 ```
 
 The API will be available at `http://localhost:8000`. Interactive documentation is at `http://localhost:8000/docs`.
@@ -124,6 +133,10 @@ TaskForge/
 │   └── test_tasks.py        # Task CRUD, filtering, and cross-user access tests
 ├── .env.example
 ├── requirements.txt
+├── compose.yaml
+├── Dockerfile
+├── .gitignore
+├── LICENSE
 └── README.md
 ```
 
