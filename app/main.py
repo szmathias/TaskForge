@@ -29,7 +29,7 @@ async def root():
     Returns:
         dict: A simple greeting message
     """
-    return {"message": "Hello, test!"}
+    return {"message": "Welcome to TaskForge! Go to the /docs page to try out the app."}
 
 
 @TaskForge.get("/health")
